@@ -49,10 +49,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet>{
 
         tvBody.setText(tweet.getBody());
         tvUser.setText(tweet.getUser().getName() + ": @" + tweet.getUser().getScreenName());
-
-        String[] relativeTime = getRelativeTimeAgo(tweet.getCreated()).split(" ");
-        String time = relativeTime[0].concat(String.valueOf(relativeTime[1].charAt(0)));
-        tvRelativeDate.setText(time);
+        tvRelativeDate.setText(getRelativeTimeAgo(tweet.getCreated()));
 
         ivImage.setImageResource(android.R.color.transparent);
         Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(ivImage);
@@ -69,6 +66,10 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet>{
             long dateMillis = sf.parse(rawJsonDate).getTime();
             relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
                     System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+            String[] relativeTime = relativeDate.split(" ");
+            if(relativeTime.length == 3) {
+                relativeDate = relativeTime[0] + relativeTime[1].substring(0, 1);
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }

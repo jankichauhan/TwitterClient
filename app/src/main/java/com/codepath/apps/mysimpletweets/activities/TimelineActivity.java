@@ -12,6 +12,7 @@ import com.codepath.apps.mysimpletweets.TwitterApp;
 import com.codepath.apps.mysimpletweets.TwitterCl;
 import com.codepath.apps.mysimpletweets.adapters.TweetsArrayAdapter;
 import com.codepath.apps.mysimpletweets.models.Tweet;
+import com.codepath.apps.mysimpletweets.utils.EndlessScrollListener;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -26,16 +27,29 @@ public class TimelineActivity extends ActionBarActivity {
     private TweetsArrayAdapter aTweets;
     private ArrayList<Tweet> tweets;
     private ListView lvTweets;
+    int currentPage = 0;
+    long max_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
 
+        max_id = 0;
         lvTweets = (ListView) findViewById(R.id.lvTweets);
         tweets = new ArrayList<Tweet>();
         aTweets = new TweetsArrayAdapter(this, tweets);
         lvTweets.setAdapter(aTweets);
+
+        lvTweets.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+                populateTimeLine();
+                // or customLoadMoreDataFromApi(totalItemsCount);
+            }
+        });
 
         client = TwitterApp.getRestClient(); // singleton client
         populateTimeLine();
@@ -46,7 +60,12 @@ public class TimelineActivity extends ActionBarActivity {
 
      */
     private void populateTimeLine() {
-        client.getHomeTimeLine(new JsonHttpResponseHandler(){
+
+        if (tweets.size() > 0){
+            max_id = tweets.get(tweets.size() - 1).getId() - 1 ;
+        }
+
+        client.getHomeTimeLine(max_id, new JsonHttpResponseHandler(){
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
