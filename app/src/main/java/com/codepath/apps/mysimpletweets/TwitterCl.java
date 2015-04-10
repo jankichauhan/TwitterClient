@@ -54,13 +54,25 @@ public class TwitterCl extends OAuthBaseClient {
 
         String apiURL = getApiUrl("statuses/home_timeline.json");
         RequestParams params = new RequestParams();
-        //params.put("count",25);
         params.put("since_id",1);
         if (max_id > 0) {
             params.put("max_id", Long.toString(max_id));
         }
 
         getClient().get(apiURL,params,handler);
+    }
+
+    public void postUpdate(String status, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/update.json");
+        RequestParams params = new RequestParams();
+        params.put("status", status);
+
+        client.post(apiUrl, params, handler);
+    }
+
+    public void getVerifyCredentials(AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("account/verify_credentials.json");
+        client.get(apiUrl, handler);
     }
 
 	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
