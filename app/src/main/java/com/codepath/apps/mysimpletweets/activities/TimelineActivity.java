@@ -2,6 +2,7 @@ package com.codepath.apps.mysimpletweets.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class TimelineActivity extends ActionBarActivity  implements ComposeTweetFragment.ComposeFragmentListener{
+public class TimelineActivity extends ActionBarActivity implements ComposeTweetFragment.ComposeFragmentListener {
 
     private TwitterCl client;
     private TweetsArrayAdapter aTweets;
@@ -32,7 +33,9 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
     private ListView lvTweets;
     private long max_id;
     private User homeUser;
-    SharedPreferences mSettings;
+
+    private SwipeRefreshLayout swipeContainer;
+
 
     private static final String TAG = TimelineActivity.class.getName();
 
@@ -52,31 +55,43 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
         lvTweets.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to your AdapterView
                 populateTimeLine();
-                // or customLoadMoreDataFromApi(totalItemsCount);
             }
         });
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                aTweets.clear();
+                populateTimeLine();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         populateTimeLine();
     }
 
     private void setupView() {
-       // getSupportActionBar().setTitle("");
 
-        TwitterApp.getRestClient().getVerifyCredentials(new JsonHttpResponseHandler(){
+        TwitterApp.getRestClient().getVerifyCredentials(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 homeUser = User.fromJSON(response);
-           //     getSupportActionBar().setTitle(homeUser.getScreenName());
-               // SharedPreferences.Editor editor = mSettings.edit();
-               // editor.putLong("user_id", homeUser.getId());
-                //editor.commit();
+                //     getSupportActionBar().setTitle(homeUser.getScreenName());
+
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers,Throwable throwable, JSONObject error) {
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject error) {
                 Log.d(TAG, throwable.toString());
                 Log.d(TAG, error.toString());
             }
@@ -99,6 +114,7 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
                 Log.d("DEBUG", response.toString());
                 aTweets.addAll(Tweet.fromJSONArray(response));
                 Log.d("DEBUG", aTweets.toString());
+                swipeContainer.setRefreshing(false);
             }
 
             @Override
@@ -108,10 +124,11 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
         });
     }
 
-    private void composeTweet(){
+    private void composeTweet() {
         ComposeTweetFragment compose = ComposeTweetFragment.newInstance(homeUser);
         compose.show(getFragmentManager(), "compose_tweet_fragment");
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -124,7 +141,7 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_compose:
                 composeTweet();
                 return true;
@@ -138,7 +155,7 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
 
     @Override
     public void onPostTweet(boolean success, Tweet tweet) {
-        if(success) {
+        if (success) {
             aTweets.insert(tweet, 0);
         }
     }

@@ -13,11 +13,8 @@ import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,10 +22,10 @@ import java.util.Locale;
  * Created by janki on 4/2/15.
  */
 //Taking the tweet object and turing to views
-public class TweetsArrayAdapter extends ArrayAdapter<Tweet>{
+public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
-    public TweetsArrayAdapter(Context context,List<Tweet> tweets) {
-        super(context,0, tweets);
+    public TweetsArrayAdapter(Context context, List<Tweet> tweets) {
+        super(context, 0, tweets);
     }
 
     //Viewholder pattern
@@ -37,9 +34,9 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet>{
 
         Tweet tweet = getItem(position);
 
-        if(convertView == null){
+        if (convertView == null) {
 
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_tweet, parent,false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_tweet, parent, false);
         }
 
         ImageView ivImage = (ImageView) convertView.findViewById(R.id.ivProfileImage);
@@ -67,7 +64,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet>{
             relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
                     System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
             String[] relativeTime = relativeDate.split(" ");
-            if(relativeTime.length == 3) {
+            if (relativeTime.length == 3) {
                 relativeDate = relativeTime[0] + relativeTime[1].substring(0, 1);
             }
         } catch (ParseException e) {

@@ -1,9 +1,6 @@
 package com.codepath.apps.mysimpletweets.fragments;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -28,7 +25,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -45,11 +41,11 @@ public class ComposeTweetFragment extends DialogFragment {
     private Button btnTweet;
     private EditText etTweet;
 
-    public ComposeTweetFragment(){
+    public ComposeTweetFragment() {
 
     }
 
-    public static ComposeTweetFragment newInstance(User user){
+    public static ComposeTweetFragment newInstance(User user) {
 
         ComposeTweetFragment compose = new ComposeTweetFragment();
         Bundle args = new Bundle();
@@ -69,6 +65,7 @@ public class ComposeTweetFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         user = getArguments().getParcelable("user");
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.compose_tweet_layout, container);
@@ -89,7 +86,7 @@ public class ComposeTweetFragment extends DialogFragment {
 
         Picasso.with(getActivity().getApplicationContext()).load(user.getProfileImageUrl()).into(ivProfilePicture);
         tvUsername.setText(user.getName());
-        tvScreenname.setText("@"+user.getScreenName());
+        tvScreenname.setText("@" + user.getScreenName());
 
         btnTweet.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,6 +134,7 @@ public class ComposeTweetFragment extends DialogFragment {
                 listener.onPostTweet(true, tweet);
                 getDialog().dismiss();
             }
+
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject error) {
                 Toast.makeText(getActivity(), "Sorry. Couldn't post. Please try again.", Toast.LENGTH_SHORT).show();
