@@ -12,4 +12,5 @@
     <string name="save_label">Post</string>
     <string name="compose_tweet_hint">What\'s happening</string>
     <string name="compose_tweet_title">Compose Tweet</string>
+    <string name="title_activity_tweet">"Tweet "</string>
 </resources>

@@ -28,28 +28,30 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         super(context, 0, tweets);
     }
 
-    //Viewholder pattern
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         Tweet tweet = getItem(position);
 
+        ViewHolder viewHolder = new ViewHolder();
         if (convertView == null) {
 
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_tweet, parent, false);
+            viewHolder.ivProfileImage = (ImageView) convertView.findViewById(R.id.ivProfileImage);
+            viewHolder.tvBody = (TextView) convertView.findViewById(R.id.tvbody);
+            viewHolder.tvUsername = (TextView) convertView.findViewById(R.id.tvUsername);
+            viewHolder.tvCreated = (TextView) convertView.findViewById(R.id.tvRelativeDate);
+        }
+        else{
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        ImageView ivImage = (ImageView) convertView.findViewById(R.id.ivProfileImage);
-        TextView tvBody = (TextView) convertView.findViewById(R.id.tvbody);
-        TextView tvUser = (TextView) convertView.findViewById(R.id.tvUsername);
-        TextView tvRelativeDate = (TextView) convertView.findViewById(R.id.tvRelativeDate);
+        viewHolder.tvBody.setText(tweet.getBody());
+        viewHolder.tvUsername.setText(tweet.getUser().getName() + ": @" + tweet.getUser().getScreenName());
+        viewHolder.tvCreated.setText(getRelativeTimeAgo(tweet.getCreated()));
 
-        tvBody.setText(tweet.getBody());
-        tvUser.setText(tweet.getUser().getName() + ": @" + tweet.getUser().getScreenName());
-        tvRelativeDate.setText(getRelativeTimeAgo(tweet.getCreated()));
-
-        ivImage.setImageResource(android.R.color.transparent);
-        Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(ivImage);
+        viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
+        Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
         return convertView;
     }
 
@@ -72,5 +74,14 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         }
 
         return relativeDate;
+    }
+
+    private static class ViewHolder {
+        ImageView ivProfileImage;
+        TextView tvUsername;
+        TextView tvScreenname;
+        TextView tvBody;
+        TextView tvCreated;
+
     }
 }

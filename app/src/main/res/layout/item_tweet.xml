@@ -3,7 +3,8 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    android:background="#ffffffff">
+    android:background="#ffffffff"
+    android:descendantFocusability="blocksDescendants">
 
     <ImageView
         android:layout_width="50dp"
@@ -33,6 +34,7 @@
         android:layout_toRightOf="@+id/ivProfileImage"
         android:layout_toEndOf="@+id/ivProfileImage"
         android:autoLink="all"
+        android:descendantFocusability="blocksDescendants"
         android:linksClickable="true"/>
 
     <TextView

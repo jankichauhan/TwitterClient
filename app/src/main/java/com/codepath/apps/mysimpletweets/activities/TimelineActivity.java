@@ -1,13 +1,19 @@
 package com.codepath.apps.mysimpletweets.activities;
 
-import android.content.SharedPreferences;
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.TwitterApp;
@@ -55,18 +61,19 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
         lvTweets.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
+                if (!isNetworkAvailable()) {
+                    return;
+                }
                 populateTimeLine();
             }
         });
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
+
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
+
                 aTweets.clear();
                 populateTimeLine();
             }
@@ -82,18 +89,34 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
 
     private void setupView() {
 
-        TwitterApp.getRestClient().getVerifyCredentials(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                homeUser = User.fromJSON(response);
-                //     getSupportActionBar().setTitle(homeUser.getScreenName());
+        if (isNetworkAvailable()) {
+            TwitterApp.getRestClient().getVerifyCredentials(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    homeUser = User.fromJSON(response);
+                    //     getSupportActionBar().setTitle(homeUser.getScreenName());
 
-            }
+                }
 
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject error) {
+                    Log.d(TAG, throwable.toString());
+                    Log.d(TAG, error.toString());
+                }
+            });
+        }
+        else{
+            Toast.makeText(this, " No network connectivity!", Toast.LENGTH_SHORT).show();
+        }
+
+        lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject error) {
-                Log.d(TAG, throwable.toString());
-                Log.d(TAG, error.toString());
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent i = new Intent(TimelineActivity.this, TweetActivity.class);
+                Tweet tweet = tweets.get(position);
+                i.putExtra("tweet", tweet);
+                startActivity(i);
             }
         });
 
@@ -101,6 +124,19 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
     }
 
     private void populateTimeLine() {
+
+        if (isNetworkAvailable()) {
+
+            fetchUsingApi();
+        } else {
+
+            fetchUsingDB();
+        }
+
+
+    }
+
+    private void fetchUsingApi() {
 
         if (tweets.size() > 0) {
             max_id = tweets.get(tweets.size() - 1).getId() - 1;
@@ -114,7 +150,11 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
                 Log.d("DEBUG", response.toString());
                 aTweets.addAll(Tweet.fromJSONArray(response));
                 Log.d("DEBUG", aTweets.toString());
+                for (Tweet tweet : tweets) {
+                    tweet.saveTweet();
+                }
                 swipeContainer.setRefreshing(false);
+
             }
 
             @Override
@@ -124,23 +164,34 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
         });
     }
 
+    private void fetchUsingDB() {
+
+        aTweets.clear();
+        aTweets.addAll(Tweet.getAll());
+
+    }
+
     private void composeTweet() {
-        ComposeTweetFragment compose = ComposeTweetFragment.newInstance(homeUser);
-        compose.show(getFragmentManager(), "compose_tweet_fragment");
+
+        if(isNetworkAvailable()){
+
+            ComposeTweetFragment compose = ComposeTweetFragment.newInstance(homeUser);
+            compose.show(getFragmentManager(), "compose_tweet_fragment");
+        }
+        else {
+            Toast.makeText(this, " No network connectivity!", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_timeline, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_compose:
                 composeTweet();
@@ -158,5 +209,12 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
         if (success) {
             aTweets.insert(tweet, 0);
         }
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 }

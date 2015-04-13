@@ -3,17 +3,30 @@ package com.codepath.apps.mysimpletweets.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Created by janki on 4/2/15.
  */
-public class User implements Parcelable {
 
+@Table(name = "user")
+public class User extends Model implements Parcelable {
+
+    @Column(name = "user_name")
     private String name;
+
+    @Column(name = "user_screen_name")
     private String screenName;
+
+    @Column(name = "user_id")
     private long id;
+
+    @Column(name = "user_profile_image")
     private String profileImageUrl;
 
 
@@ -33,7 +46,7 @@ public class User implements Parcelable {
         this.screenName = screenName;
     }
 
-    public long getId() {
+    public long getUId() {
         return id;
     }
 
@@ -72,9 +85,29 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.id);
         dest.writeString(this.name);
         dest.writeString(this.screenName);
+        dest.writeLong(this.id);
         dest.writeString(this.profileImageUrl);
     }
+
+    public User() {
+    }
+
+    private User(Parcel in) {
+        this.name = in.readString();
+        this.screenName = in.readString();
+        this.id = in.readLong();
+        this.profileImageUrl = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        public User createFromParcel(Parcel source) {
+            return new User(source);
+        }
+
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }
