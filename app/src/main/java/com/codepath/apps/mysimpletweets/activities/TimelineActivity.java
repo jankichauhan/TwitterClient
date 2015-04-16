@@ -176,7 +176,7 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
 
         if(isNetworkAvailable()){
 
-            ComposeTweetFragment compose = ComposeTweetFragment.newInstance(homeUser);
+            ComposeTweetFragment compose = ComposeTweetFragment.newInstance(homeUser,"", 0);
             compose.show(getFragmentManager(), "compose_tweet_fragment");
         }
         else {

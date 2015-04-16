@@ -40,16 +40,20 @@ public class ComposeTweetFragment extends DialogFragment {
     private TextView tvCharacterLeft;
     private Button btnTweet;
     private EditText etTweet;
+    private long replyId;
+    private String replyTo;
 
     public ComposeTweetFragment() {
 
     }
 
-    public static ComposeTweetFragment newInstance(User user) {
+    public static ComposeTweetFragment newInstance(User user, String screenName, long replyId) {
 
         ComposeTweetFragment compose = new ComposeTweetFragment();
         Bundle args = new Bundle();
         args.putParcelable("user", user);
+        args.putString("replyTo", screenName);
+        args.putLong("replyId", replyId);
         compose.setArguments(args);
 
         return compose;
@@ -64,6 +68,8 @@ public class ComposeTweetFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user = getArguments().getParcelable("user");
+        replyTo = getArguments().getString("replyTo", "");
+        replyId = getArguments().getLong("inReplyId");
     }
 
     @Override
@@ -95,7 +101,9 @@ public class ComposeTweetFragment extends DialogFragment {
             }
         });
 
-        tvCharacterLeft.setText(Integer.toString(140));
+        tvCharacterLeft.setText(Integer.toString(140 - replyTo.length()));
+        etTweet.setText(replyTo);
+        etTweet.setSelection(etTweet.length());
         etTweet.requestFocus();
         getDialog().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -127,7 +135,7 @@ public class ComposeTweetFragment extends DialogFragment {
 
         String status = etTweet.getText().toString();
 
-        TwitterApp.getRestClient().postUpdate(status, new JsonHttpResponseHandler() {
+        TwitterApp.getRestClient().postUpdate(status, replyId, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Tweet tweet = Tweet.fromJSON(response);

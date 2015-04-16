@@ -1,6 +1,7 @@
 package com.codepath.apps.mysimpletweets.adapters;
 
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.apps.mysimpletweets.R;
+import com.codepath.apps.mysimpletweets.fragments.ComposeTweetFragment;
 import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.squareup.picasso.Picasso;
 
@@ -29,13 +31,14 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Tweet tweet = getItem(position);
+        final Tweet tweet = getItem(position);
 
         ViewHolder viewHolder = new ViewHolder();
         if (convertView == null) {
 
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_tweet, parent, false);
             viewHolder.ivProfileImage = (ImageView) convertView.findViewById(R.id.ivProfileImage);
+            viewHolder.ivReply = (ImageView) convertView.findViewById(R.id.ivReply);
             viewHolder.tvBody = (TextView) convertView.findViewById(R.id.tvbody);
             viewHolder.tvUsername = (TextView) convertView.findViewById(R.id.tvUsername);
             viewHolder.tvScreenname = (TextView) convertView.findViewById(R.id.tvScreenName);
@@ -57,6 +60,18 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
         viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
         Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
+
+        final long uid = tweet.getUId();
+        viewHolder.ivReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String screenName = tweet.getUser().getScreenName() + " ";
+                ComposeTweetFragment composeFragment = ComposeTweetFragment.newInstance(tweet.getUser(), screenName, uid);
+                FragmentActivity activity = (FragmentActivity)getContext();
+                composeFragment.show(activity.getFragmentManager(), "compose_fragment");
+            }
+        });
+
         return convertView;
     }
 
@@ -83,6 +98,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
     private static class ViewHolder {
         ImageView ivProfileImage;
+        ImageView ivReply;
         TextView tvUsername;
         TextView tvScreenname;
         TextView tvBody;
