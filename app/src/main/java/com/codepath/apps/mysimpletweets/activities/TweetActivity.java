@@ -23,6 +23,8 @@ public class TweetActivity extends ActionBarActivity {
     private TextView tvScreenName;
     private TextView tvBody;
     private TextView tvTweetTime;
+    private TextView tvFavCount;
+    private TextView tvRetweetCount;
     private ImageView ivProfilePicture;
     private Tweet tweet;
 
@@ -37,10 +39,14 @@ public class TweetActivity extends ActionBarActivity {
         tvBody = (TextView) findViewById(R.id.tvBody);
         tvTweetTime = (TextView) findViewById(R.id.tvTweetTime);
         ivProfilePicture = (ImageView) findViewById(R.id.ivProfilePicture);
+        tvFavCount = (TextView) findViewById(R.id.tvFavs);
+        tvRetweetCount = (TextView) findViewById(R.id.tvRetweets);
 
         tweet = getIntent().getParcelableExtra("tweet");
         tvUserName.setText(tweet.getUser().getName());
-        tvScreenName.setText(tweet.getUser().getScreenName());
+        tvScreenName.setText(" @"+tweet.getUser().getScreenName());
+        tvFavCount.setText(Integer.toString(tweet.getFavCount()));
+        tvRetweetCount.setText(Integer.toString(tweet.getRetweetCount()));
         tvBody.setText(tweet.getBody());
         tvTweetTime.setText(getFormattedCreatedAt(tweet.getCreated()));
         Picasso.with(getBaseContext()).load(tweet.getUser().getProfileImageUrl()).into(ivProfilePicture);

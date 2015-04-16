@@ -84,7 +84,7 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        populateTimeLine();
+      //  populateTimeLine();
     }
 
     private void setupView() {
@@ -109,6 +109,7 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
             Toast.makeText(this, " No network connectivity!", Toast.LENGTH_SHORT).show();
         }
 
+        populateTimeLine();
         lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
