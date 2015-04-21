@@ -87,14 +87,6 @@ public abstract class TweetsListFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        setupView();
-
-        return v;
-    }
-
-    private void setupView() {
-
-        populateTimeLine();
         lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -106,6 +98,14 @@ public abstract class TweetsListFragment extends Fragment {
             }
         });
 
+        setupView();
+
+        return v;
+    }
+
+    private void setupView() {
+
+        populateTimeLine();
 
     }
 

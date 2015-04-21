@@ -1,5 +1,7 @@
 package com.codepath.apps.mysimpletweets.activities;
 
+import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -50,6 +52,12 @@ public class TweetActivity extends ActionBarActivity {
         tvBody.setText(tweet.getBody());
         tvTweetTime.setText(getFormattedCreatedAt(tweet.getCreated()));
         Picasso.with(getBaseContext()).load(tweet.getUser().getProfileImageUrl()).into(ivProfilePicture);
+
+        getSupportActionBar().setTitle("  " + tweet.getUser().getName());
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xff4099ff));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
     }
 
 

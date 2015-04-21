@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -61,7 +62,10 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
         PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabStrip.setViewPager(vpPager);
 
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0x44099FFF));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xff4099ff));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
         setupView();
 
@@ -75,7 +79,7 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     homeUser = User.fromJSON(response);
-                         getSupportActionBar().setTitle(homeUser.getScreenName());
+                         getSupportActionBar().setTitle("   " + homeUser.getScreenName());
 
                 }
 

@@ -8,29 +8,31 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="150dp"
+        android:layout_height="100dp"
         android:id="@+id/rlUserHeader"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:background="#ff4099ff">
 
 
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:id="@+id/ivProfilePicture"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
             android:id="@+id/tvUsername"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/ivProfilePicture"
-            android:layout_toEndOf="@+id/ivProfilePicture" />
+            android:layout_alignTop="@+id/ivProfilePicture"
+            android:layout_alignLeft="@+id/tvFollowers"
+            android:layout_alignStart="@+id/tvFollowers"
+            android:textColor="#ff000017"
+            android:textSize="14dp"
+            android:textAlignment="center" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -38,17 +40,20 @@
             android:text="New Text"
             android:id="@+id/tvTag"
             android:layout_below="@+id/tvUsername"
-            android:layout_toRightOf="@+id/ivProfilePicture"
-            android:layout_toEndOf="@+id/ivProfilePicture" />
+            android:layout_alignLeft="@+id/tvUsername"
+            android:layout_alignStart="@+id/tvUsername"
+            android:textColor="#ffd0d0d1"
+            android:textSize="12dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
             android:id="@+id/tvFollowers"
-            android:layout_centerVertical="true"
+            android:layout_below="@+id/ivProfilePicture"
             android:layout_toRightOf="@+id/ivProfilePicture"
-            android:layout_toEndOf="@+id/ivProfilePicture" />
+            android:layout_toEndOf="@+id/ivProfilePicture"
+            android:textSize="12dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -56,18 +61,17 @@
             android:text="New Text"
             android:id="@+id/tvFollowing"
             android:layout_alignTop="@+id/tvFollowers"
-            android:layout_toRightOf="@+id/tvFollowers"
-            android:layout_toEndOf="@+id/tvFollowers"
-            android:layout_marginLeft="38dp"
-            android:layout_marginStart="38dp" />
+            android:layout_toLeftOf="@+id/ivProfilePicture"
+            android:layout_toStartOf="@+id/ivProfilePicture"
+            android:textSize="12dp" />
     </RelativeLayout>
 
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/rlUserHeader"
+        android:id="@+id/flContainer"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/flContainer"></FrameLayout>
+        android:layout_below="@+id/rlUserHeader"></FrameLayout>
 
 </RelativeLayout>
