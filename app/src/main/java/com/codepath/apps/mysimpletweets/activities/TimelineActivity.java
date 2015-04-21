@@ -1,10 +1,17 @@
 package com.codepath.apps.mysimpletweets.activities;
 
+
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -15,11 +22,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.TwitterApp;
 import com.codepath.apps.mysimpletweets.TwitterCl;
 import com.codepath.apps.mysimpletweets.adapters.TweetsArrayAdapter;
 import com.codepath.apps.mysimpletweets.fragments.ComposeTweetFragment;
+import com.codepath.apps.mysimpletweets.fragments.HomeTimeLineFragment;
+import com.codepath.apps.mysimpletweets.fragments.MentionTimeFragment;
+import com.codepath.apps.mysimpletweets.fragments.TweetsListFragment;
 import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.apps.mysimpletweets.models.User;
 import com.codepath.apps.mysimpletweets.utils.EndlessScrollListener;
@@ -33,14 +44,8 @@ import java.util.ArrayList;
 
 public class TimelineActivity extends ActionBarActivity implements ComposeTweetFragment.ComposeFragmentListener {
 
-    private TwitterCl client;
-    private TweetsArrayAdapter aTweets;
-    private ArrayList<Tweet> tweets;
-    private ListView lvTweets;
-    private long max_id;
     private User homeUser;
-
-    private SwipeRefreshLayout swipeContainer;
+    private HomeTimeLineFragment homeTimeLineFragment;
 
 
     private static final String TAG = TimelineActivity.class.getName();
@@ -50,41 +55,17 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
 
-        max_id = 0;
-        lvTweets = (ListView) findViewById(R.id.lvTweets);
-        tweets = new ArrayList<Tweet>();
-        aTweets = new TweetsArrayAdapter(this, tweets);
-        lvTweets.setAdapter(aTweets);
-        client = TwitterApp.getRestClient();
+        ViewPager vpPager = (ViewPager) findViewById(R.id.viewpager);
+        vpPager.setAdapter(new TweetPageAdapater(getSupportFragmentManager()));
+
+        PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabStrip.setViewPager(vpPager);
+
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0x44099FFF));
+
         setupView();
 
-        lvTweets.setOnScrollListener(new EndlessScrollListener() {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                if (!isNetworkAvailable()) {
-                    return;
-                }
-                populateTimeLine();
-            }
-        });
 
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-                aTweets.clear();
-                populateTimeLine();
-            }
-        });
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-      //  populateTimeLine();
     }
 
     private void setupView() {
@@ -94,7 +75,7 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     homeUser = User.fromJSON(response);
-                    //     getSupportActionBar().setTitle(homeUser.getScreenName());
+                         getSupportActionBar().setTitle(homeUser.getScreenName());
 
                 }
 
@@ -108,68 +89,6 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
         else{
             Toast.makeText(this, " No network connectivity!", Toast.LENGTH_SHORT).show();
         }
-
-        populateTimeLine();
-        lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent i = new Intent(TimelineActivity.this, TweetActivity.class);
-                Tweet tweet = tweets.get(position);
-                i.putExtra("tweet", tweet);
-                startActivity(i);
-            }
-        });
-
-
-    }
-
-    private void populateTimeLine() {
-
-        if (isNetworkAvailable()) {
-
-            fetchUsingApi();
-        } else {
-
-            fetchUsingDB();
-        }
-
-
-    }
-
-    private void fetchUsingApi() {
-
-        if (tweets.size() > 0) {
-            max_id = tweets.get(tweets.size() - 1).getId() - 1;
-        }
-
-        client.getHomeTimeLine(max_id, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-
-                Log.d("DEBUG", response.toString());
-                aTweets.addAll(Tweet.fromJSONArray(response));
-                Log.d("DEBUG", aTweets.toString());
-                for (Tweet tweet : tweets) {
-                    tweet.saveTweet();
-                }
-                swipeContainer.setRefreshing(false);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject error) {
-                Log.d("DEBUG", error.toString());
-            }
-        });
-    }
-
-    private void fetchUsingDB() {
-
-        aTweets.clear();
-        aTweets.addAll(Tweet.getAll());
-
     }
 
     private void composeTweet() {
@@ -197,8 +116,8 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
             case R.id.action_compose:
                 composeTweet();
                 return true;
-            case R.id.action_settings:
-                return true;
+            case R.id.action_profile:
+                onProfileClick();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -208,8 +127,14 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
     @Override
     public void onPostTweet(boolean success, Tweet tweet) {
         if (success) {
-            aTweets.insert(tweet, 0);
+            homeTimeLineFragment.insertAt(tweet, 0);
         }
+    }
+
+    public void onProfileClick(){
+        Intent i = new Intent(this, ProfileActivity.class);
+        i.putExtra("user", homeUser);
+        startActivity(i);
     }
 
     private Boolean isNetworkAvailable() {
@@ -217,5 +142,38 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public class TweetPageAdapater extends FragmentPagerAdapter{
+
+        private String tabTitle[] ={"Home", "Mention"};
+
+        public TweetPageAdapater(FragmentManager fa){
+            super(fa);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+
+            if(position == 0){
+                return new HomeTimeLineFragment();
+            }
+            else if(position == 1){
+                return new MentionTimeFragment();
+            }
+            else{
+                return null;
+            }
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+           return tabTitle[position];
+        }
+
+        @Override
+        public int getCount() {
+            return tabTitle.length;
+        }
     }
 }

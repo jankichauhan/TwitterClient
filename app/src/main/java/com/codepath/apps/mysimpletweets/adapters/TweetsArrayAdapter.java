@@ -1,6 +1,7 @@
 package com.codepath.apps.mysimpletweets.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -11,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.apps.mysimpletweets.R;
+import com.codepath.apps.mysimpletweets.activities.ProfileActivity;
 import com.codepath.apps.mysimpletweets.fragments.ComposeTweetFragment;
 import com.codepath.apps.mysimpletweets.models.Tweet;
+import com.codepath.apps.mysimpletweets.models.User;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -60,6 +63,16 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
         viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
         Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
+
+        final User user = tweet.getUser();
+        viewHolder.ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), ProfileActivity.class);
+                i.putExtra("user", user);
+                getContext().startActivity(i);
+            }
+        });
 
         final long uid = tweet.getUId();
         viewHolder.ivReply.setOnClickListener(new View.OnClickListener() {

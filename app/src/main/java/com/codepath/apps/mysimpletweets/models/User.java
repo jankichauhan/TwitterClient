@@ -29,6 +29,12 @@ public class User extends Model implements Parcelable {
     @Column(name = "user_profile_image")
     private String profileImageUrl;
 
+    @Column(name = "followers")
+    private long followers;
+
+    @Column(name = "following")
+    private long following;
+
 
     public String getName() {
         return name;
@@ -62,6 +68,22 @@ public class User extends Model implements Parcelable {
         this.profileImageUrl = profileImageUrl;
     }
 
+    public long getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(long following) {
+        this.following = following;
+    }
+
+    public long getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(long followers) {
+        this.followers = followers;
+    }
+
     public static User fromJSON(JSONObject user){
 
         User newUser = new User();
@@ -71,6 +93,8 @@ public class User extends Model implements Parcelable {
             newUser.screenName = user.getString("screen_name");
             newUser.profileImageUrl = user.getString("profile_image_url");
             newUser.id = user.getLong("id");
+            newUser.followers = user.getLong("followers_count");
+            newUser.following = user.getLong("friends_count");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -89,6 +113,8 @@ public class User extends Model implements Parcelable {
         dest.writeString(this.screenName);
         dest.writeLong(this.id);
         dest.writeString(this.profileImageUrl);
+        dest.writeLong(this.followers);
+        dest.writeLong(this.following);
     }
 
     public User() {
@@ -99,6 +125,8 @@ public class User extends Model implements Parcelable {
         this.screenName = in.readString();
         this.id = in.readLong();
         this.profileImageUrl = in.readString();
+        this.followers = in.readLong();
+        this.following = in.readLong();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
