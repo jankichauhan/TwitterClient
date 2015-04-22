@@ -11,6 +11,8 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import java.net.URLEncoder;
+
 /*
  * 
  * This is the object responsible for communicating with a REST API. 
@@ -93,6 +95,18 @@ public class TwitterCl extends OAuthBaseClient {
         RequestParams params = new RequestParams();
         params.put("count",25);
         getClient().get(apiURL,params,handler);
+    }
+
+    public void getSearchTweets(String query, long max_id, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("search/tweets.json");
+        RequestParams params = new RequestParams();
+        if (query != null) {
+            params.put("q", URLEncoder.encode(query));
+        }
+        if (max_id > 0) {
+            params.put("max_id", Long.toString(max_id));
+        }
+        client.get(apiUrl, params, handler);
     }
 
 	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint

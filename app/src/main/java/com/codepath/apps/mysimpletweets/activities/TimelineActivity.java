@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -19,8 +20,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -31,6 +34,7 @@ import com.codepath.apps.mysimpletweets.adapters.TweetsArrayAdapter;
 import com.codepath.apps.mysimpletweets.fragments.ComposeTweetFragment;
 import com.codepath.apps.mysimpletweets.fragments.HomeTimeLineFragment;
 import com.codepath.apps.mysimpletweets.fragments.MentionTimeFragment;
+import com.codepath.apps.mysimpletweets.fragments.SearchTweetFragment;
 import com.codepath.apps.mysimpletweets.fragments.TweetsListFragment;
 import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.apps.mysimpletweets.models.User;
@@ -110,7 +114,29 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.menu_timeline, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String inputQuery) {
+                // perform query here
+                String query = inputQuery;
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+
+                searchTweet(query);
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -124,6 +150,20 @@ public class TimelineActivity extends ActionBarActivity implements ComposeTweetF
                 onProfileClick();
             default:
                 return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    private void searchTweet(String query) {
+
+        if(isNetworkAvailable()){
+
+            Intent i = new Intent(this, SearchActivity.class);
+            i.putExtra("query", query);
+            startActivity(i);
+        }
+        else {
+            Toast.makeText(this, " No network connectivity!", Toast.LENGTH_SHORT).show();
         }
 
     }

@@ -14,4 +14,6 @@
     <string name="compose_tweet_title">Compose Tweet</string>
     <string name="title_activity_tweet">"Tweet "</string>
     <string name="title_activity_profile">"Profile "</string>
+    <string name="action_search">Search</string>
+    <string name="title_activity_search">SearchActivity</string>
 </resources>

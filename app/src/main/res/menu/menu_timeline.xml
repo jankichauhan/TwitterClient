@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.codepath.apps.mysimpletweets.activities.TimelineActivity">
     <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/action_search"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.SearchView"/>
+    <item
         android:id="@+id/action_profile"
         android:title="Profile"
         android:icon="@drawable/ic_profile"

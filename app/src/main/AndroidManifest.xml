@@ -32,8 +32,8 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme"
-            android:logo="@drawable/ic_launcher">
+            android:logo="@drawable/ic_launcher"
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,17 +53,21 @@
         <activity
             android:name=".activities.TimelineActivity"
             android:label="@string/title_acitivity_timeline"
-            android:logo="@drawable/ic_launcher">
+            android:logo="@drawable/ic_launcher" >
         </activity>
         <activity
             android:name=".activities.TweetActivity"
             android:label="@string/title_activity_tweet"
-            android:logo="@drawable/ic_launcher">
+            android:logo="@drawable/ic_launcher" >
         </activity>
         <activity
             android:name=".activities.ProfileActivity"
             android:label="@string/title_activity_profile"
-            android:logo="@drawable/ic_launcher">
+            android:logo="@drawable/ic_launcher" >
+        </activity>
+        <activity
+            android:name=".activities.SearchActivity"
+            android:label="@string/title_activity_search" >
         </activity>
     </application>
 
