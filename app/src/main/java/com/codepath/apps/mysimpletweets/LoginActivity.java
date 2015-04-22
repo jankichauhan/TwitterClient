@@ -1,7 +1,9 @@
 package com.codepath.apps.mysimpletweets;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.View;
 
@@ -14,6 +16,10 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterCl> {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xff4099ff));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 	}
 
 
